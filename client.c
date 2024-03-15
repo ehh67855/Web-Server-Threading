@@ -11,6 +11,7 @@ char *get_ip(char *host);
 char *build_get_query(char *host, char *page);
 void usage();
 void *client(void *arg);
+
 int timeval_subtract(struct timeval *result, struct timeval *t2, struct timeval *t1);
 
 #define PAGE "/index.html"
@@ -32,14 +33,14 @@ int main(int argc, char **argv)
   struct timeval tvBegin, tvEnd, tvDiff;
 		int nthread, failed = 0;
 		int *tret = NULL;
-				
+
 		if(argc < 3) {
 				printf("usage: ./client [server ip or dns] [port] <# thread>\n");
 				return 0;
 		}
 		host = argv[1];
 		port = atoi(argv[2]);
-		
+
 		if(argc < 4) nthread  = 10;
 		else nthread = atoi(argv[3]);
 		if(nthread > MAX_THREAD) nthread = MAX_THREAD;
@@ -50,7 +51,7 @@ int main(int argc, char **argv)
 		}
 
 		gettimeofday(&tvBegin, NULL);
-		
+
 		printf("Request: GET %s:%d/%s, # of client: %d\n", host, port, page, nthread);
 
 		pthread_t p[MAX_THREAD];
@@ -89,11 +90,11 @@ void *client(void *arg)
 		gettimeofday(&ltvBegin, NULL);
 		sock = create_tcp_socket();
 		ip = get_ip(host);
-		//fprintf(stderr, "IP is %s:%d\n", ip, port); 
+		//fprintf(stderr, "IP is %s:%d\n", ip, port);
 		remote = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in *));
 		remote->sin_family = AF_INET;
 		tmpres = inet_pton(AF_INET, ip, (void *)(&(remote->sin_addr.s_addr)));
-		if( tmpres < 0)  
+		if( tmpres < 0)
 		{
 				perror("Can't set remote->sin_addr.s_addr");
 				exit(1);
@@ -115,7 +116,7 @@ void *client(void *arg)
 		//Send the query to the server
 		int sent = 0;
 		while(sent < strlen(get))
-		{ 
+		{
 				tmpres = send(sock, get+sent, strlen(get)-sent, 0);
 				if(tmpres == -1){
 						perror("Can't send query");
